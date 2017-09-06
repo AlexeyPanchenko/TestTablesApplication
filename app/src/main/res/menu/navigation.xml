@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_my"
+        android:icon="@drawable/ic_my_tables_black_24dp"
+        android:title="@string/navigation_my_title" />
+
+    <item
+        android:id="@+id/navigation_downloaded"
+        android:icon="@drawable/ic_download_tables_black_24dp"
+        android:title="@string/navigation_downloaded_title" />
+
+    <item
+        android:id="@+id/navigation_all"
+        android:icon="@drawable/ic_all_tables_black_24dp"
+        android:title="@string/navigation_all_title" />
+
+</menu>

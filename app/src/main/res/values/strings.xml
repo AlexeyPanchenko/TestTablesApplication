@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Tables</string>
+    <string name="navigation_my_title">Мои</string>
+    <string name="navigation_downloaded_title">Скаченные</string>
+    <string name="navigation_all_title">Все</string>
+
+    <string name="enter_number_title">Введите номер телефона</string>
+    <string name="enter_number_number_hint">+7 123 456 78 90</string>
+    <string name="enter_number_send_text">Отправить</string>
+    <string name="enter_number_empty_error">Номер не может быть пустым</string>
+    <string name="enter_number_incorrect_error">Некорректный номер</string>
+
+    <string name="enter_code_title">Введите код, полученный по смс</string>
+    <string name="enter_code_confirm_text">Подтвердить</string>
+    <string name="enter_code_resend_text">Отправить код заново</string>
+
+    <string name="login_code_unknown">Неверный код</string>
+    <string name="add_table_dialog_title">Создать таблицу</string>
+    <string name="score_name">Балл</string>
+    <string name="tag_name">Отзыв</string>
+    <string name="tags">Отзывы</string>
+    <string name="add_table_dialog_create_button">Создать</string>
+    <string name="cancel">Отмена</string>
+
+    <string name="table_id_title">ID таблицы: %s</string>
+    <string name="score_title">Средний балл: %s</string>
+    <string name="tag_title">Отзывы: %s</string>
+    <string name="validate_score_error">Балл должен быть от 0 до 10</string>
+
+    <string name="menu_edit_title">Редактировать</string>
+    <string name="menu_delete_title">Удалить</string>
+
+</resources>

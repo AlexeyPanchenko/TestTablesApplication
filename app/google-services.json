@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "732574987005",
+    "firebase_url": "https://testtables-96402.firebaseio.com",
+    "project_id": "testtables-96402",
+    "storage_bucket": "testtables-96402.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:732574987005:android:e1f9829f9f4efdbc",
+        "android_client_info": {
+          "package_name": "ru.aol_panchenko.tables"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "732574987005-3qoh5tr0kvrf4rf22vdlva7iotnstnqc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAdiwzuxGoBUJ-A7cQd6sXPL0tuJHoUV4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
