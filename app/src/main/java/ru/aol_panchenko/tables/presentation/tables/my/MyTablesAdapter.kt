@@ -37,9 +37,12 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     fun changeItem(item: Table) {
-        val table = _tables.first { it.tableId == item.tableId }
+        val table = _tables.firstOrNull { it.tableId == item.tableId }
         val position: Int = _tables.indexOf(table)
-        notifyItemChanged(position)
+        if (position != -1) {
+            (_tables as ArrayList)[position] = item
+            notifyItemChanged(position)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyTablesVH {
@@ -78,4 +81,5 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     override fun getItemCount() = _tables.size
+
 }

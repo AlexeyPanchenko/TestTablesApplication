@@ -1,4 +1,4 @@
-package ru.aol_panchenko.tables.presentation.tables.all
+package ru.aol_panchenko.tables.presentation.tables.download
 
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
@@ -11,7 +11,7 @@ import ru.aol_panchenko.tables.presentation.model.Table
 /**
  * Created by alexey on 09.09.17.
  */
-class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
+class DownloadTablesPresenter(private val _mvpView: DownloadTablesMVPView) {
 
     private val _database = FirebaseDatabase.getInstance().reference.child("tables")
     private val _userId: String? = FirebaseAuth.getInstance().currentUser?.phoneNumber
@@ -22,8 +22,11 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
 
     private fun initChangeListener() {
 
+        _database.keepSynced(true)
+
         val childEventListener = object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError?) {
+
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot?, p1: String?) {
@@ -31,35 +34,35 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                _mvpView.changeTable(table!!)
+                if (isContains(table)) {
+                    _mvpView.changeTable(table!!)
+                }
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot?, p1: String?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                _mvpView.addTable(table!!)
+                if (isContains(table)) {
+                    _mvpView.addTable(table!!)
+                }
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                _mvpView.removeTable(table!!)
+                if (isContains(table)) {
+                    _mvpView.removeTable(table!!)
+                }
             }
         }
         _database.addChildEventListener(childEventListener)
     }
 
+    private fun isContains(table: Table?) = table?.holders != null && table.holders!!.contains(_userId)
+
     fun onItemClick(view: View, table: Table) {
-        if (table.uId != _userId || (table.holders != null && table.holders!!.contains(_userId))) {
-            _mvpView.showItemMenu(view, table)
-        } else {
-            _mvpView.showErrorYourTable()
-        }
+        _mvpView.showItemMenu(view, table)
     }
 
-    fun onDownloadMenuClick(table: Table) {
-        if (table.holders == null){
-            table.holders = ArrayList(1)
-        }
-        table.holders?.add(_userId!!)
-        _database.child(table.tableId).setValue(table)
+    fun onEditMenuClick(table: Table) {
+        _mvpView.showEditDialog(table)
     }
 }

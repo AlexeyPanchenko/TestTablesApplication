@@ -8,9 +8,9 @@ import ru.aol_panchenko.tables.presentation.model.Table
  */
 interface MyTablesMVPView {
     fun createTable()
-    fun addTable(table: Table?)
-    fun showItemMenu(view: View, table: Table)
-    fun removeTable(table: Table?)
-    fun showEditDialog(table: Table)
+    fun addTable(table: Table)
     fun changeTable(table: Table)
+    fun removeTable(table: Table)
+    fun showItemMenu(view: View, table: Table)
+    fun showEditDialog(table: Table)
 }

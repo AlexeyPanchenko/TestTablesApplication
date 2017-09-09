@@ -7,7 +7,7 @@ import android.os.Parcelable
  * Created by alexey on 28.08.17.
  */
 class Score() : Parcelable {
-    var uId: String? = null
+    var uId: String? = ""
     var value: Int = 0
     var timeStamp: Long = 0
 

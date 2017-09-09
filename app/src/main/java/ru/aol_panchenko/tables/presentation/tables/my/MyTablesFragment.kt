@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.tables_fragment.*
+import org.jetbrains.anko.support.v4.onRefresh
 import ru.aol_panchenko.tables.R
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.tables.add_table.AddTableDialog
@@ -48,12 +49,12 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
         AddTableDialog.show(activity.supportFragmentManager)
     }
 
-    override fun addTable(table: Table?) {
-        _adapter!!.addItem(table!!)
+    override fun addTable(table: Table) {
+        _adapter!!.addItem(table)
     }
 
-    override fun removeTable(table: Table?) {
-        _adapter!!.removeItem(table!!)
+    override fun removeTable(table: Table) {
+        _adapter!!.removeItem(table)
     }
 
     override fun changeTable(table: Table) {

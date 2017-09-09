@@ -2,6 +2,7 @@ package ru.aol_panchenko.tables.presentation.tables.edit_table
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import ru.aol_panchenko.tables.presentation.model.Score
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.model.Tag
 
@@ -19,14 +20,21 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
 
     fun onArgumentsAccept(table: Table?) {
         if (table != null) {
-            val score = table.scores!!.first { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
+
+            var score = table.scores?.firstOrNull { _userId == it.uId }
+            if (score == null) {
+                score = Score()
+                score.uId = _userId
+                table.scores!!.add(score)
+            }
+
             _mvpView.fillSCore(score.value.toString())
-            val tags = table.tags?.filter { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-                    ?: ArrayList(0)
+            table.tags = if (table.tags != null) table.tags else ArrayList(0)
+            val tags = table.tags?.filter { _userId == it.uId } ?: ArrayList(0)
+            tags.forEach { _viewModel.tags.add(Tag(it)) }
 
             _viewModel.table = table
 
-            tags.forEach { _viewModel.tags.add(Tag(it)) }
             _mvpView.setTags(_viewModel.tags)
         } else {
             _mvpView.showErrorToast()
@@ -52,8 +60,7 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
     }
 
     private fun addingTags() {
-        val tableTags = _viewModel.table!!.tags!!
-                .filter { _userId == it.uId }
+        val tableTags = _viewModel.table!!.tags?.filter { _userId == it.uId } ?: ArrayList(0)
         _viewModel.tags = _mvpView.getTags()!!
         val resultTags = ArrayList<Tag>(_viewModel.tags.size)
         _viewModel.tags.forEach { tag ->
@@ -69,10 +76,10 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
     }
 
     private fun addingScore() {
-        val tableScore = _viewModel.table!!.scores!!
-                .first { it.uId == _userId }
+        val tableScore = _viewModel.table!!.scores!!.first { it.uId == _userId }
         val scoreValue = if (_mvpView.getScoreValue().isNotEmpty()) _mvpView.getScoreValue().toInt() else 0
         if (tableScore.value != scoreValue) {
+            tableScore.value = scoreValue
             tableScore.timeStamp = System.currentTimeMillis()
         }
     }

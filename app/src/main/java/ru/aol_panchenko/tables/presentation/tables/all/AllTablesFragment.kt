@@ -41,16 +41,16 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
         rvTables.layoutManager = LinearLayoutManager(activity)
     }
 
-    override fun changeTable(table: Table?) {
-        _adapter?.changeItem(table!!)
+    override fun changeTable(table: Table) {
+        _adapter?.changeItem(table)
     }
 
-    override fun addTable(table: Table?) {
-        _adapter?.addItem(table!!)
+    override fun addTable(table: Table) {
+        _adapter?.addItem(table)
     }
 
-    override fun removeTable(table: Table?) {
-        _adapter?.removeItem(table!!)
+    override fun removeTable(table: Table) {
+        _adapter?.removeItem(table)
     }
 
     override fun showItemMenu(view: View, table: Table) {
