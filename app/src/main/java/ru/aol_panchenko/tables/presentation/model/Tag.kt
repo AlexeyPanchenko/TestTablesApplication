@@ -23,6 +23,12 @@ class Tag() : Parcelable {
         timeStamp = parcel.readLong()
     }
 
+    constructor(tag: Tag) : this() {
+        this.uId = tag.uId
+        this.value = tag.value
+        this.timeStamp = tag.timeStamp
+    }
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(uId)
         parcel.writeString(value)

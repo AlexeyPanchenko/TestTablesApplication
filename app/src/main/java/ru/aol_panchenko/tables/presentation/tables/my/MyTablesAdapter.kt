@@ -36,6 +36,12 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
         }
     }
 
+    fun changeItem(item: Table) {
+        val table = _tables.first { it.tableId == item.tableId }
+        val position: Int = _tables.indexOf(table)
+        notifyItemChanged(position)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyTablesVH {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.my_table_item, parent, false)
         return MyTablesVH(view, _context)

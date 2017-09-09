@@ -1,8 +1,8 @@
-package ru.aol_panchenko.tables.presentation.tables.editTable
+package ru.aol_panchenko.tables.presentation.tables.edit_table
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import ru.aol_panchenko.tables.presentation.model.Score
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.model.Tag
 
@@ -19,13 +19,12 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
         if (table != null) {
             val score = table.scores!!.first { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
             _mvpView.fillSCore(score.value.toString())
-            val tags = if (table.tags != null) {
-                table.tags!!.filter { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-            } else {
-                ArrayList(0)
-            }
+            val tags = table.tags?.filter { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
+                    ?: ArrayList(0)
+
             _viewModel.table = table
-            _viewModel.tags = tags as ArrayList<Tag>
+
+            tags.forEach { _viewModel.tags.add(Tag(it)) }
             _mvpView.setTags(_viewModel.tags)
         } else {
             _mvpView.showErrorToast()
@@ -46,30 +45,40 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
             val database = FirebaseDatabase.getInstance().reference.child("tables")
             val key = _viewModel.table!!.tableId
             addingScore(userId, timeStamp)
-
-            //database.child(key).setValue(table)
+            addingTags(userId)
+            database.child(key).setValue(_viewModel.table)
             _mvpView.dismissDialog()
         } else {
             _mvpView.showErrorValidate()
         }
     }
 
-    private fun addingScore(userId: String, timeStamp: Long) {
-        _viewModel.table!!.scores!!.forEach {
-            if (it.uId == userId) {
-                _viewModel.table!!.scores!!.remove(it)
+    private fun addingTags(userId: String) {
+        val tableTags = _viewModel.table!!.tags!!
+                .filter { userId == it.uId }
+        _viewModel.tags = _mvpView.getTags()!!
+        val resultTags = ArrayList<Tag>(_viewModel.tags.size)
+        tableTags.forEach { Log.d("TTT", "До: ${it.timeStamp}   ${it.value}") }
+        _viewModel.tags.forEach { tag ->
+            tableTags.forEach {
+                if (tag.timeStamp == it.timeStamp && tag.value != it.value) {
+                    tag.timeStamp = System.currentTimeMillis()
+                }
             }
+            resultTags.add(tag)
         }
-        val scoreValue = if (_mvpView.getScoreValue().isNotEmpty()) _mvpView.getScoreValue().toInt() else 0
-        _viewModel.table!!.scores!!.add(Score(userId, scoreValue, timeStamp))
+        _viewModel.table!!.tags!!.removeAll(tableTags)
+        _viewModel.table!!.tags!!.addAll(resultTags)
+        _viewModel.table?.tags?.forEach { Log.d("TTT", "После: ${it.timeStamp}   ${it.value}") }
     }
 
-    private fun createTable(key: String): Table {
-        val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
-        val timeStamp = System.currentTimeMillis()
+    private fun addingScore(userId: String, timeStamp: Long) {
+        val tableScore = _viewModel.table!!.scores!!
+                .first { it.uId == userId }
         val scoreValue = if (_mvpView.getScoreValue().isNotEmpty()) _mvpView.getScoreValue().toInt() else 0
-        val score = Score(userId, scoreValue, timeStamp)
-        return Table(userId, key, arrayListOf(score), _mvpView.getTags()!!, ArrayList(0))
+        if (tableScore.value != scoreValue) {
+            tableScore.timeStamp = timeStamp
+        }
     }
 
     private fun validateScore(): Boolean {
@@ -79,15 +88,14 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
     }
 
     fun onPause() {
-        val items = _mvpView.getTags()
-        if (items == null) {
-            _viewModel.tags.clear()
-        } else {
-            _viewModel.tags = items
-        }
+        syncItems()
     }
 
     fun onCancelClick() {
         _mvpView.dismissDialog()
+    }
+
+    fun syncItems() {
+        _viewModel.tags = _mvpView.getTags()!!
     }
 }

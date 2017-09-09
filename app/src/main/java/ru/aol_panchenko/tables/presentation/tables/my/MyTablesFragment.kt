@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.tables_fragment.*
 import ru.aol_panchenko.tables.R
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.tables.add_table.AddTableDialog
-import ru.aol_panchenko.tables.presentation.tables.editTable.EditTableDialog
+import ru.aol_panchenko.tables.presentation.tables.edit_table.EditTableDialog
 
 /**
  * Created by alexey on 02.09.17.
@@ -54,6 +54,10 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
 
     override fun removeTable(table: Table?) {
         _adapter!!.removeItem(table!!)
+    }
+
+    override fun changeTable(table: Table) {
+        _adapter!!.changeItem(table)
     }
 
     override fun showEditDialog(table: Table) {

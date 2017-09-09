@@ -37,7 +37,10 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String?) {
-
+                val table = dataSnapshot!!.getValue(Table::class.java)
+                if (table!!.uId == FirebaseAuth.getInstance().currentUser!!.phoneNumber!!) {
+                    _mvpView.changeTable(table)
+                }
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot?, p1: String?) {
@@ -66,6 +69,5 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
     fun onDeleteMenuClick(table: Table) {
         _database.child(table.tableId).removeValue()
     }
-
 
 }

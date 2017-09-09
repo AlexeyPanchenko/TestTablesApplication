@@ -12,4 +12,5 @@ interface MyTablesMVPView {
     fun showItemMenu(view: View, table: Table)
     fun removeTable(table: Table?)
     fun showEditDialog(table: Table)
+    fun changeTable(table: Table)
 }

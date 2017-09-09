@@ -15,19 +15,6 @@ class AddTablePresenter(private val _mvpView: AddTableMVPView, private val _view
         _mvpView.setTags(_viewModel.tags)
     }
 
-    fun onArgumentsAccept(table: Table?) {
-        val score = table!!.scores!!.first { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-        _mvpView.fillSCore(score.value.toString())
-        val tags = if (table.tags != null) {
-            table.tags!!.filter { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-        } else {
-            ArrayList(0)
-        }
-        _viewModel.tags = tags as ArrayList<Tag>
-        _mvpView.setTags(_viewModel.tags)
-        _viewModel.isEdit = true
-    }
-
     fun onAddTagClick() {
         val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
         val timeStamp = System.currentTimeMillis()
@@ -38,14 +25,10 @@ class AddTablePresenter(private val _mvpView: AddTableMVPView, private val _view
     fun onCreateClick() {
         if (validateScore()) {
             val database = FirebaseDatabase.getInstance().reference.child("tables")
-            if (_viewModel.isEdit) {
-                //database.child()
-            } else {
-                val key = database.push().key
-                val table = createTable(key)
-                database.child(key).setValue(table)
-                _mvpView.dismissDialog()
-            }
+            val key = database.push().key
+            val table = createTable(key)
+            database.child(key).setValue(table)
+            _mvpView.dismissDialog()
         } else {
             _mvpView.showErrorValidate()
         }
@@ -66,16 +49,15 @@ class AddTablePresenter(private val _mvpView: AddTableMVPView, private val _view
     }
 
     fun onPause() {
-        val items = _mvpView.getTags()
-        if (items == null) {
-            _viewModel.tags.clear()
-        } else {
-            _viewModel.tags = items
-        }
+        syncItems()
     }
 
     fun onCancelClick() {
         _mvpView.dismissDialog()
+    }
+
+    fun syncItems() {
+        _viewModel.tags = _mvpView.getTags()!!
     }
 
 }

@@ -1,4 +1,4 @@
-package ru.aol_panchenko.tables.presentation.tables.editTable
+package ru.aol_panchenko.tables.presentation.tables.edit_table
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -23,7 +23,7 @@ import ru.aol_panchenko.tables.presentation.tables.add_table.*
 /**
  * Created by alexey on 07.09.17.
  */
-class EditTableDialog : DialogFragment(), EditTableMVPView, OnTegDeleteListener {
+class EditTableDialog : DialogFragment(), EditTableMVPView, OnTegChangedListener {
 
     private var _presenter: EditTablePresenter? = null
     private var _adapter: AddTableTagsAdapter? = null
@@ -43,24 +43,26 @@ class EditTableDialog : DialogFragment(), EditTableMVPView, OnTegDeleteListener 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.add_table_dialog, container, false)
-        val fabAdd = view.findViewById<FloatingActionButton>(R.id.fabAddTag)
-        val btnCreate = view.findViewById<Button>(R.id.btnCreate)
-        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
-        _rvTags = view.findViewById(R.id.rv_tags)
-        _editScore = view.findViewById(R.id.etScore)
-
+        initViews(view)
         initRecyclerView()
         _presenter = EditTablePresenter(this, ViewModelProviders.of(this).get(EditTableViewModel::class.java))
-
-        fabAdd.onClick { _presenter!!.onAddTagClick() }
-        btnCreate.onClick { _presenter!!.onCreateClick() }
-        btnCancel.onClick { _presenter!!.onCancelClick() }
 
         if (arguments != null && savedInstanceState == null) {
             val table = arguments.getParcelable<Table>(ARG_TABLE)
             _presenter!!.onArgumentsAccept(table)
         }
         return view
+    }
+
+    private fun initViews(view: View) {
+        val fabAdd = view.findViewById<FloatingActionButton>(R.id.fabAddTag)
+        val btnCreate = view.findViewById<Button>(R.id.btnCreate)
+        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
+        fabAdd.onClick { _presenter!!.onAddTagClick() }
+        btnCreate.onClick { _presenter!!.onCreateClick() }
+        btnCancel.onClick { _presenter!!.onCancelClick() }
+        _rvTags = view.findViewById(R.id.rv_tags)
+        _editScore = view.findViewById(R.id.etScore)
     }
 
     private fun initRecyclerView() {
@@ -87,8 +89,12 @@ class EditTableDialog : DialogFragment(), EditTableMVPView, OnTegDeleteListener 
         dialog.dismiss()
     }
 
-    override fun onDelete(tag: Tag, position: Int) {
+    override fun onDelete() {
         dialog.currentFocus.clearFocus()
+    }
+
+    override fun onSync() {
+        _presenter!!.syncItems()
     }
 
     override fun showErrorValidate() {
