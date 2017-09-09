@@ -66,7 +66,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
 
     override fun showItemMenu(view: View, table: Table) {
         val popupMenu = PopupMenu(activity, view)
-        popupMenu.inflate(R.menu.item_menu)
+        popupMenu.inflate(R.menu.menu_my_tables)
         popupMenu.setOnMenuItemClickListener { item -> when(item.itemId){
             R.id.item_menu_edit -> {
                 _presenter!!.onEditMenuClick(table)

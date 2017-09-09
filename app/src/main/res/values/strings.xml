@@ -29,5 +29,6 @@
 
     <string name="menu_edit_title">Редактировать</string>
     <string name="menu_delete_title">Удалить</string>
+    <string name="menu_download_title">Скачать</string>
 
 </resources>

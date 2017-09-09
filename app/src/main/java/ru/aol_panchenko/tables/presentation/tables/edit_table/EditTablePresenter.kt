@@ -1,6 +1,5 @@
 package ru.aol_panchenko.tables.presentation.tables.edit_table
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import ru.aol_panchenko.tables.presentation.model.Table
@@ -10,6 +9,9 @@ import ru.aol_panchenko.tables.presentation.model.Tag
  * Created by alexey on 07.09.17.
  */
 class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _viewModel: EditTableViewModel){
+
+    private val _database = FirebaseDatabase.getInstance().reference.child("tables")
+    private val _userId: String? = FirebaseAuth.getInstance().currentUser?.phoneNumber
 
     init {
         _mvpView.setTags(_viewModel.tags)
@@ -32,33 +34,28 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
     }
 
     fun onAddTagClick() {
-        val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
         val timeStamp = System.currentTimeMillis()
-        val tag = Tag(userId, "", timeStamp)
+        val tag = Tag(_userId!!, "", timeStamp)
         _mvpView.addTag(tag)
     }
 
     fun onCreateClick() {
         if (validateScore()) {
-            val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
-            val timeStamp = System.currentTimeMillis()
-            val database = FirebaseDatabase.getInstance().reference.child("tables")
             val key = _viewModel.table!!.tableId
-            addingScore(userId, timeStamp)
-            addingTags(userId)
-            database.child(key).setValue(_viewModel.table)
+            addingScore()
+            addingTags()
+            _database.child(key).setValue(_viewModel.table)
             _mvpView.dismissDialog()
         } else {
             _mvpView.showErrorValidate()
         }
     }
 
-    private fun addingTags(userId: String) {
+    private fun addingTags() {
         val tableTags = _viewModel.table!!.tags!!
-                .filter { userId == it.uId }
+                .filter { _userId == it.uId }
         _viewModel.tags = _mvpView.getTags()!!
         val resultTags = ArrayList<Tag>(_viewModel.tags.size)
-        tableTags.forEach { Log.d("TTT", "До: ${it.timeStamp}   ${it.value}") }
         _viewModel.tags.forEach { tag ->
             tableTags.forEach {
                 if (tag.timeStamp == it.timeStamp && tag.value != it.value) {
@@ -69,15 +66,14 @@ class EditTablePresenter(private val _mvpView: EditTableMVPView, private val _vi
         }
         _viewModel.table!!.tags!!.removeAll(tableTags)
         _viewModel.table!!.tags!!.addAll(resultTags)
-        _viewModel.table?.tags?.forEach { Log.d("TTT", "После: ${it.timeStamp}   ${it.value}") }
     }
 
-    private fun addingScore(userId: String, timeStamp: Long) {
+    private fun addingScore() {
         val tableScore = _viewModel.table!!.scores!!
-                .first { it.uId == userId }
+                .first { it.uId == _userId }
         val scoreValue = if (_mvpView.getScoreValue().isNotEmpty()) _mvpView.getScoreValue().toInt() else 0
         if (tableScore.value != scoreValue) {
-            tableScore.timeStamp = timeStamp
+            tableScore.timeStamp = System.currentTimeMillis()
         }
     }
 
