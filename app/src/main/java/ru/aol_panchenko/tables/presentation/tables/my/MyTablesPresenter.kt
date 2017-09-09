@@ -54,15 +54,6 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
             }
         }
 
-         /*_database.addListenerForSingleValueEvent(object : ValueEventListener{
-             override fun onCancelled(e: DatabaseError?) {
-             }
-
-             override fun onDataChange(dataSnapshot: DataSnapshot?) {
-                 val table = dataSnapshot!!.getValue(Table::class.java)
-                 _mvpView.updateTable(table!!)
-             }
-         })*/
         _database.addChildEventListener(childEventListener)
     }
 

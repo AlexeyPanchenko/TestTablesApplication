@@ -81,5 +81,9 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     override fun getItemCount() = _tables.size
+    fun notifyCha() {
+        (_tables as ArrayList).clear()
+        notifyDataSetChanged()
+    }
 
 }
