@@ -12,7 +12,9 @@ interface AllTablesMVPView {
     fun changeTable(table: Table)
     fun addTable(table: Table)
     fun removeTable(table: Table)
-    fun notifyListChanged()
+    fun notifyListChangedNoConnection()
     fun showErrorNetworkState()
     fun showContentState()
+    fun setTables(searchTables: ArrayList<Table>)
+    fun closeSearch()
 }

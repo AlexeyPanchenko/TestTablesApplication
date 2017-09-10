@@ -13,4 +13,6 @@ interface MyTablesMVPView {
     fun removeTable(table: Table)
     fun showItemMenu(view: View, table: Table)
     fun showEditDialog(table: Table)
+    fun setTables(searchTables: ArrayList<Table>)
+    fun closeSearch()
 }

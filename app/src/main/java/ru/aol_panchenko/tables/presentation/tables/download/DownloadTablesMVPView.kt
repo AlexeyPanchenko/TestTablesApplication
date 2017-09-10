@@ -12,4 +12,6 @@ interface DownloadTablesMVPView {
     fun changeTable(table: Table)
     fun addTable(table: Table)
     fun removeTable(table: Table)
+    fun setTables(searchTables: ArrayList<Table>)
+    fun closeSearch()
 }

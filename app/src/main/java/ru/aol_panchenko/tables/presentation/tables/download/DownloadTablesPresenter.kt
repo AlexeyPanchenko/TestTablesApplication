@@ -2,10 +2,7 @@ package ru.aol_panchenko.tables.presentation.tables.download
 
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import ru.aol_panchenko.tables.presentation.model.Table
 
 /**
@@ -64,5 +61,32 @@ class DownloadTablesPresenter(private val _mvpView: DownloadTablesMVPView) {
 
     fun onEditMenuClick(table: Table) {
         _mvpView.showEditDialog(table)
+    }
+
+    fun onSearchQuerySubmit(query: String?) {
+        _database.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                val searchTables = ArrayList<Table>()
+                dataSnapshot!!.children
+                        .map { it.getValue(Table::class.java) }
+                        .filter { it?.holders != null && it.holders!!.contains(_userId) }
+                        .forEach { table ->
+                            table?.tags?.forEach met@ {
+                                if (it.value!!.contains(query!!) && !searchTables.contains(table)) {
+                                    searchTables.add(table)
+                                    return@met
+                                }
+                            }
+                        }
+                _mvpView.setTables(searchTables)
+            }
+        })
+    }
+
+    fun onSearchClosed() {
+        _mvpView.closeSearch()
     }
 }

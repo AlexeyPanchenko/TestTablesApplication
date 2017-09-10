@@ -58,7 +58,7 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
                     _mvpView.showContentState()
                 } else {
                     _database.removeEventListener(childEventListener)
-                    _mvpView.notifyListChanged()
+                    _mvpView.notifyListChangedNoConnection()
                     _mvpView.showErrorNetworkState()
                 }
             }
@@ -82,5 +82,31 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
         }
         table.holders?.add(_userId!!)
         _database.child(table.tableId).setValue(table)
+    }
+
+    fun onSearchQuerySubmit(query: String?) {
+        _database.addValueEventListener(object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                val searchTables = ArrayList<Table>()
+                dataSnapshot!!.children
+                        .map { it.getValue(Table::class.java) }
+                        .forEach { table ->
+                            table?.tags?.forEach met@ {
+                                if (it.value!!.contains(query!!) && !searchTables.contains(table)) {
+                                    searchTables.add(table)
+                                    return@met
+                                }
+                            }
+                        }
+                _mvpView.setTables(searchTables)
+            }
+        })
+    }
+
+    fun onSearchClosed() {
+        _mvpView.closeSearch()
     }
 }

@@ -2,11 +2,11 @@ package ru.aol_panchenko.tables.presentation.tables.all
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.SearchView
+import android.view.*
 import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.tables_fragment.*
 import org.jetbrains.anko.support.v4.toast
@@ -26,6 +26,11 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
 
     companion object {
         fun newInstance() = AllTablesFragment()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,8 +60,8 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
         _adapter?.removeItem(table)
     }
 
-    override fun notifyListChanged() {
-        _adapter?.notifyCha()
+    override fun notifyListChangedNoConnection() {
+        _adapter?.notifyDataClear()
     }
 
     override fun showItemMenu(view: View, table: Table) {
@@ -88,5 +93,42 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
 
     override fun onItemClick(view: View, table: Table) {
         _presenter!!.onItemClick(view, table)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater!!.inflate(R.menu.serach_menu, menu)
+        val searchItem = menu?.findItem(R.id.menu_search_action)
+        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+        searchView.queryHint = getString(R.string.search_view_hint)
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                _presenter?.onSearchQuerySubmit(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+
+                return true
+            }
+        })
+
+
+        searchItem!!.setOnActionExpandListener(object : MenuItem.OnActionExpandListener{
+            override fun onMenuItemActionExpand(p0: MenuItem?) = true
+
+            override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                _presenter?.onSearchClosed()
+                return true
+            }
+        })
+    }
+
+    override fun setTables(searchTables: ArrayList<Table>) {
+        _adapter!!.setItems(searchTables)
+    }
+
+    override fun closeSearch() {
+        activity.recreate()
     }
 }
