@@ -10,6 +10,7 @@ import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.tables_fragment.*
 import org.jetbrains.anko.support.v4.toast
@@ -63,6 +64,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
     }
 
     override fun removeTable(table: Table) {
+        _adapter?.getItems()!!.forEach { Log.d("TTT", "ID222   = ${it.tableId}") }
         _adapter!!.removeItem(table)
     }
 
@@ -83,6 +85,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
                 return@setOnMenuItemClickListener true
             }
             R.id.item_menu_delete -> {
+                _adapter?.getItems()!!.forEach { Log.d("TTT", "ID = ${it.tableId}") }
                 _presenter!!.onDeleteMenuClick(table)
                 return@setOnMenuItemClickListener true
             }
@@ -108,12 +111,10 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
         searchView.queryHint = getString(R.string.search_view_hint)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                _presenter?.onSearchQuerySubmit(query)
-                return true
-            }
+            override fun onQueryTextSubmit(query: String?): Boolean = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                _presenter?.onSearchQuerySubmit(newText)
                 return true
             }
         })
@@ -133,6 +134,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
     }
 
     override fun closeSearch() {
+        _adapter!!.notifyDataClear()
         activity.recreate()
     }
 

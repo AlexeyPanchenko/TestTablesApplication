@@ -20,6 +20,12 @@ class LoginAdapter(fragmentManager: FragmentManager) : FragmentPagerAdapter(frag
         else -> throw IllegalStateException("impossible")
     }
 
+    override fun getPageTitle(position: Int): CharSequence = when(position){
+        ENTER_NUMBER_FRAGMENT -> "Телефон"
+        ENTER_CODE_FRAGMENT -> "Код"
+        else -> throw IllegalStateException("impossible")
+    }
+
     override fun getCount() = 2
 
 }

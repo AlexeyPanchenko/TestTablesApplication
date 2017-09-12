@@ -1,6 +1,8 @@
 package ru.aol_panchenko.tables.presentation.login
 
 import android.os.Bundle
+import android.support.design.widget.TabItem
+import android.support.design.widget.TabLayout
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -38,6 +40,7 @@ class LoginActivity: AppCompatActivity(), LoginMVPView,
         _fragmentManager = supportFragmentManager
         _loginAdapter = LoginAdapter(_fragmentManager)
         loginPager.adapter = _loginAdapter
+        slidingTabs.setupWithViewPager(loginPager)
         if (savedInstanceState == null) {
             loginPager.currentItem = _loginAdapter!!.ENTER_NUMBER_FRAGMENT
         }

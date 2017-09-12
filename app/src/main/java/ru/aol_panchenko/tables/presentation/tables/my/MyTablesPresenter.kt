@@ -1,5 +1,6 @@
 package ru.aol_panchenko.tables.presentation.tables.my
 
+import android.util.Log
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -59,6 +60,7 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
+                Log.d("TTT", "REMOVE ID = ${table!!.tableId}")
                 if (isMy(table)) {
                     _mvpView.removeTable(table!!)
                 }
@@ -81,7 +83,7 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
         })
     }
 
-    private fun isMy(table: Table?) = table!!.uId ==  _userId
+    private fun isMy(table: Table?) = table!!.uId == _userId
 
     fun onItemClick(view: View, table: Table) {
         _mvpView.showItemMenu(view, table)

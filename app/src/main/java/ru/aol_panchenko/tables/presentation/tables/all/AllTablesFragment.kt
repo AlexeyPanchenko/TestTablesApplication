@@ -110,13 +110,10 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
         searchView.queryHint = getString(R.string.search_view_hint)
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                _presenter?.onSearchQuerySubmit(query)
-                return true
-            }
+            override fun onQueryTextSubmit(query: String?) = false
 
             override fun onQueryTextChange(newText: String?): Boolean {
-
+                _presenter?.onSearchQuerySubmit(newText)
                 return true
             }
         })

@@ -2,6 +2,7 @@ package ru.aol_panchenko.tables.presentation.tables.my
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.jetbrains.anko.onClick
@@ -28,12 +29,18 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     fun removeItem(item: Table) {
-        val table = _tables.first { it.tableId == item.tableId }
-        val position: Int = _tables.indexOf(table)
-        if (position != -1) {
-            (_tables as ArrayList).removeAt(position)
-            notifyItemRemoved(position)
+        val filterTables = _tables.filter { item.tableId == it.tableId }
+        if (filterTables.isEmpty()) {
+            notifyDataSetChanged()
+        } else {
+            val table = filterTables.first { item.tableId == it.tableId }
+            val position: Int = _tables.indexOf(table)
+            if (position != -1) {
+                (_tables as ArrayList).removeAt(position)
+                notifyItemRemoved(position)
+            }
         }
+
     }
 
     fun changeItem(item: Table) {
