@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import ru.aol_panchenko.tables.presentation.model.Table
 import com.google.firebase.database.ValueEventListener
+import ru.aol_panchenko.tables.utils.formatContact
 
 
 /**
@@ -16,17 +17,43 @@ import com.google.firebase.database.ValueEventListener
 class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
 
     private val _database = FirebaseDatabase.getInstance().reference.child("tables")
+    private val _databaseUsers = FirebaseDatabase.getInstance().reference.child("users")
     private val _userId: String? = FirebaseAuth.getInstance().currentUser?.phoneNumber
+    private var _table: Table? = null
+    private val _users = ArrayList<String>()
 
     init {
-        initChangeListener()
+        initFirebaseListener()
     }
 
-    private fun initChangeListener() {
+    private fun initFirebaseListener() {
 
         _database.keepSynced(false)
 
-        val childEventListener = object : ChildEventListener {
+        val childEventListener = getChildEventListener()
+
+        val connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
+        connectedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java)!!
+                if (connected) {
+                    _database.addChildEventListener(childEventListener)
+                    _mvpView.showContentState()
+                } else {
+                    _database.removeEventListener(childEventListener)
+                    _mvpView.notifyListChangedNoConnection()
+                    _mvpView.showErrorNetworkState()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        initValueEventListener()
+    }
+
+    private fun getChildEventListener(): ChildEventListener {
+        return object : ChildEventListener {
             override fun onCancelled(p0: DatabaseError?) {
             }
 
@@ -48,40 +75,37 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
                 _mvpView.removeTable(table!!)
             }
         }
+    }
 
-        val connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
-        connectedRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val connected = snapshot.getValue(Boolean::class.java)!!
-                if (connected) {
-                    _database.addChildEventListener(childEventListener)
-                    _mvpView.showContentState()
-                } else {
-                    _database.removeEventListener(childEventListener)
-                    _mvpView.notifyListChangedNoConnection()
-                    _mvpView.showErrorNetworkState()
-                }
+    private fun initValueEventListener() {
+        _databaseUsers.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
             }
 
-            override fun onCancelled(error: DatabaseError) {
+            override fun onDataChange(dataSnapshot: DataSnapshot?) {
+                _users.clear()
+                dataSnapshot!!
+                        .children
+                        .mapTo(_users) { it.value as String }
+
             }
         })
     }
 
     fun onItemClick(view: View, table: Table) {
-        if (table.uId == _userId || (table.holders != null && table.holders!!.contains(_userId))) {
-            _mvpView.showErrorYourTable()
-        } else {
-            _mvpView.showItemMenu(view, table)
-        }
+        _mvpView.showItemMenu(view, table)
     }
 
     fun onDownloadMenuClick(table: Table) {
-        if (table.holders == null){
-            table.holders = ArrayList(1)
+        if (table.uId == _userId || (table.holders != null && table.holders!!.contains(_userId))) {
+            _mvpView.showErrorYourTable()
+        } else {
+            if (table.holders == null){
+                table.holders = ArrayList(1)
+            }
+            table.holders?.add(_userId!!)
+            _database.child(table.tableId).setValue(table)
         }
-        table.holders?.add(_userId!!)
-        _database.child(table.tableId).setValue(table)
     }
 
     fun onSearchQuerySubmit(query: String?) {
@@ -108,5 +132,28 @@ class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
 
     fun onSearchClosed() {
         _mvpView.closeSearch()
+    }
+
+    fun onSharingMenuClick(table: Table) {
+        _table = table
+        _mvpView.extractContact()
+    }
+
+    fun onContactExtracted(number: String?) {
+        val phone = formatContact(number!!)
+        if (_table!!.holders == null){
+            _table!!.holders = ArrayList(1)
+        }
+        if (_users.contains(phone)) {
+            if (!_table?.holders!!.contains(phone) && _table?.uId != phone) {
+                _table?.holders?.add(phone)
+                _database.child(_table!!.tableId).setValue(_table)
+            } else {
+                _mvpView.showAlreadyExistMessage()
+            }
+        } else {
+            _mvpView.showNotInstallMessage()
+        }
+        _table = null
     }
 }

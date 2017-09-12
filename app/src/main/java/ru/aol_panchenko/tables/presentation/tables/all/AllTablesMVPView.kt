@@ -17,4 +17,7 @@ interface AllTablesMVPView {
     fun showContentState()
     fun setTables(searchTables: ArrayList<Table>)
     fun closeSearch()
+    fun extractContact()
+    fun showAlreadyExistMessage()
+    fun showNotInstallMessage()
 }

@@ -1,6 +1,9 @@
 package ru.aol_panchenko.tables.presentation.tables.all
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.support.v4.app.Fragment
 import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -20,6 +23,7 @@ import ru.aol_panchenko.tables.presentation.tables.my.OnItemClickListener
  */
 class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
 
+    private val REQUEST_PHONE: Int = 1
     private var _presenter: AllTablesPresenter? = null
     private var _adapter: MyTablesAdapter? = null
     private lateinit var _errorContainer: FrameLayout
@@ -70,6 +74,10 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
         popupMenu.setOnMenuItemClickListener { item -> when(item.itemId){
             R.id.item_menu_download -> {
                 _presenter!!.onDownloadMenuClick(table)
+                return@setOnMenuItemClickListener true
+            }
+            R.id.item_menu_sharing -> {
+                _presenter!!.onSharingMenuClick(table)
                 return@setOnMenuItemClickListener true
             }
             else -> {
@@ -130,5 +138,33 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
 
     override fun closeSearch() {
         activity.recreate()
+    }
+
+    override fun extractContact() {
+        val intent = Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+        startActivityForResult(intent, REQUEST_PHONE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_PHONE) {
+            val contactUri = data!!.data
+            val queryFields = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val c = activity.contentResolver.query(contactUri, queryFields, null, null, null)
+            if (c.moveToFirst()) {
+                val indexPhone = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val number = c.getString(indexPhone)
+                _presenter!!.onContactExtracted(number)
+            }
+            c.close()
+        }
+    }
+
+    override fun showAlreadyExistMessage() {
+        toast(getString(R.string.user_already_has_table_message))
+    }
+
+    override fun showNotInstallMessage() {
+        toast(getString(R.string.user_has_not_app_message))
     }
 }

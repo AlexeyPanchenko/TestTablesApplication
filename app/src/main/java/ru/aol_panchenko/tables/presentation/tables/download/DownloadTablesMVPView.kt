@@ -14,4 +14,7 @@ interface DownloadTablesMVPView {
     fun removeTable(table: Table)
     fun setTables(searchTables: ArrayList<Table>)
     fun closeSearch()
+    fun extractContact()
+    fun showAlreadyExistMessage()
+    fun showNotInstallMessage()
 }

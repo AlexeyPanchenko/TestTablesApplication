@@ -12,7 +12,12 @@ import java.util.*
  */
 fun formatPhone(phone: String) = "+${phone.replace("\\D".toRegex(), "")}".trim()
 
-fun dateFormate(timeStamp: Long): String? {
+fun formatContact(phone: String): String {
+    val correctNumber = if (phone.startsWith("8")) "7${phone.substring(1)}" else phone
+    return "+${correctNumber.replace("\\D".toRegex(), "")}".trim()
+}
+
+fun dateFormat(timeStamp: Long): String? {
     val dateFormat = SimpleDateFormat("dd.MM.yyyy")
     dateFormat.timeZone = TimeZone.getDefault()
     return dateFormat.format(timeStamp)

@@ -11,4 +11,8 @@
         android:icon="@drawable/ic_delete_black_24dp"
         android:title="@string/menu_delete_title"/>
 
+    <item
+        android:id="@+id/item_menu_sharing"
+        android:title="@string/menu_sharing_title"/>
+
 </menu>

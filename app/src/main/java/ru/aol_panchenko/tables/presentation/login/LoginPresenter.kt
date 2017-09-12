@@ -6,8 +6,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
-import org.jetbrains.anko.startActivity
-import ru.aol_panchenko.tables.presentation.MainActivity
+import com.google.firebase.database.FirebaseDatabase
 import ru.aol_panchenko.tables.utils.formatPhone
 
 /**
@@ -19,6 +18,7 @@ class LoginPresenter(private val _mvpView: LoginMVPView) {
 
     private var _verificationId: String? = null
     private var _token: PhoneAuthProvider.ForceResendingToken? = null
+    private val _database = FirebaseDatabase.getInstance().reference.child("users")
 
     fun onSendPhone(phone: String) {
         _mvpView.showProgress()
@@ -57,6 +57,8 @@ class LoginPresenter(private val _mvpView: LoginMVPView) {
         _mvpView.showContent()
         if (task.isSuccessful || task.isComplete) {
             val user = task.result.user
+            val key = _database.push().key
+            _database.child(key).setValue(user.phoneNumber)
             _mvpView.signIn()
         } else {
             _mvpView.showErrorSignIn()

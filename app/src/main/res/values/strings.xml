@@ -33,5 +33,8 @@
     <string name="no_internet_connection">Нет соединения с интернетом</string>
     <string name="search_menu_action_titile">Поиск</string>
     <string name="search_view_hint">Поиск по отзывам</string>
+    <string name="menu_sharing_title">Поделиться</string>
+    <string name="user_already_has_table_message">У данного пользователя уже есть эта таблица</string>
+    <string name="user_has_not_app_message">У этого друга нет приложения</string>
 
 </resources>

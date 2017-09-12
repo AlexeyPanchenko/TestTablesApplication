@@ -1,7 +1,9 @@
 package ru.aol_panchenko.tables.presentation.tables.my
 
-import android.arch.lifecycle.ViewModelProviders
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.view.MenuItemCompat
@@ -10,6 +12,7 @@ import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.SearchView
 import android.view.*
 import kotlinx.android.synthetic.main.tables_fragment.*
+import org.jetbrains.anko.support.v4.toast
 import ru.aol_panchenko.tables.R
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.tables.add_table.AddTableDialog
@@ -20,6 +23,7 @@ import ru.aol_panchenko.tables.presentation.tables.edit_table.EditTableDialog
  */
 class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
 
+    private val REQUEST_PHONE: Int = 1
     private var _presenter: MyTablesPresenter? = null
     private var _adapter: MyTablesAdapter? = null
 
@@ -82,6 +86,10 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
                 _presenter!!.onDeleteMenuClick(table)
                 return@setOnMenuItemClickListener true
             }
+            R.id.item_menu_sharing -> {
+                _presenter!!.onSharingMenuClick(table)
+                return@setOnMenuItemClickListener true
+            }
             else -> {
                 return@setOnMenuItemClickListener false
             }
@@ -126,6 +134,34 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
 
     override fun closeSearch() {
         activity.recreate()
+    }
+
+    override fun extractContact() {
+        val intent = Intent(Intent.ACTION_PICK, Phone.CONTENT_URI)
+        startActivityForResult(intent, REQUEST_PHONE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_PHONE) {
+            val contactUri = data!!.data
+            val queryFields = arrayOf(Phone.NUMBER)
+            val c = activity.contentResolver.query(contactUri, queryFields, null, null, null)
+            if (c.moveToFirst()) {
+                val indexPhone = c.getColumnIndex(Phone.NUMBER)
+                val number = c.getString(indexPhone)
+                _presenter!!.onContactExtracted(number)
+            }
+            c.close()
+        }
+    }
+
+    override fun showAlreadyExistMessage() {
+        toast(getString(R.string.user_already_has_table_message))
+    }
+
+    override fun showNotInstallMessage() {
+        toast(getString(R.string.user_has_not_app_message))
     }
 
 }
