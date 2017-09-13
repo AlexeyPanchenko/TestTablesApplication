@@ -48,44 +48,49 @@ class MyTablesVH(view: View, private val context: Context) : RecyclerView.ViewHo
         textTag.text = context.getString(R.string.tag_title, text)
     }
 
+    //TODO: Закомментированы те строки которые могут быть причиной краша на старых версиях
+
     fun toggleScores() {
         if (rvScores.isShown) {
-            slideUp(context, rvScores)
+            //slideUp(context, rvScores)
             rvScores.visibility = View.GONE
-            ivDropScore.image = getImageDown()
+            //ivDropScore.image = getImageDown()
         } else {
-            ivDropScore.image = getImageUp()
+            //ivDropScore.image = getImageUp()
             rvScores.visibility = View.VISIBLE
-            slideDown(context, rvScores)
+            //slideDown(context, rvScores)
         }
     }
 
     fun toggleTags() {
         if (rvTags.isShown) {
-            slideUp(context, rvTags)
+            //slideUp(context, rvTags)
             rvTags.visibility = View.GONE
-            ivDropTag.image = getImageDown()
+            //ivDropTag.image = getImageDown()
         } else {
-            ivDropTag.image = getImageUp()
+            //ivDropTag.image = getImageUp()
             rvTags.visibility = View.VISIBLE
-            slideDown(context, rvTags)
+            //slideDown(context, rvTags)
         }
     }
 
     private fun getImageDown(): Drawable? {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        return context.resources.getDrawable(R.drawable.ic_arrow_drop_down_black_24dp)
+        /*return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             context.resources.getDrawable(R.drawable.ic_arrow_drop_down_black_24dp)
         } else {
             context.getDrawable(R.drawable.ic_arrow_drop_down_black_24dp)
-        }
+        }*/
+
     }
 
     private fun getImageUp(): Drawable? {
-        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        return context.resources.getDrawable(R.drawable.ic_arrow_drop_up_black_24dp)
+        /*return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             context.resources.getDrawable(R.drawable.ic_arrow_drop_up_black_24dp)
         } else {
             context.getDrawable(R.drawable.ic_arrow_drop_up_black_24dp)
-        }
+        }*/
     }
 
     fun initScores(scores: List<Score>) {
