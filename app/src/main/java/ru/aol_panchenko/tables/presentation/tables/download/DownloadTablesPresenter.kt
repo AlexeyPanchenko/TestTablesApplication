@@ -137,4 +137,10 @@ class DownloadTablesPresenter(private val _mvpView: DownloadTablesMVPView) {
         }
         _table = null
     }
+
+    fun onDeleteMenuClick(table: Table) {
+        table.holders?.remove(_userId)
+        _database.child(table.tableId).setValue(table)
+        _mvpView.removeTable(table)
+    }
 }

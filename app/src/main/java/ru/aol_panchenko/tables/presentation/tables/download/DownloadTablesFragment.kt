@@ -9,6 +9,7 @@ import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.SearchView
+import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.tables_fragment.*
 import org.jetbrains.anko.support.v4.toast
@@ -69,6 +70,10 @@ class DownloadTablesFragment : Fragment(), DownloadTablesMVPView, OnItemClickLis
         popupMenu.setOnMenuItemClickListener { item -> when(item.itemId){
             R.id.item_menu_downloaded_edit -> {
                 _presenter!!.onEditMenuClick(table)
+                return@setOnMenuItemClickListener true
+            }
+            R.id.item_menu_delete -> {
+                _presenter!!.onDeleteMenuClick(table)
                 return@setOnMenuItemClickListener true
             }
             R.id.item_menu_sharing -> {
