@@ -2,7 +2,6 @@ package ru.aol_panchenko.tables.presentation.tables.my
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import org.jetbrains.anko.onClick
@@ -12,8 +11,8 @@ import ru.aol_panchenko.tables.presentation.model.Table
 /**
  * Created by alexey on 02.09.17.
  */
-class MyTablesAdapter(private val _context: Context, private val _clikListener: OnItemClickListener)
-    : RecyclerView.Adapter<MyTablesVH>() {
+class TablesAdapter(private val _context: Context, private val _clikListener: OnItemClickListener)
+    : RecyclerView.Adapter<TablesVH>() {
 
     private var _tables: List<Table> = ArrayList()
 
@@ -52,17 +51,17 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyTablesVH {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TablesVH {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.my_table_item, parent, false)
-        return MyTablesVH(view, _context)
+        return TablesVH(view, _context)
     }
 
-    override fun onBindViewHolder(holder: MyTablesVH?, position: Int) {
+    override fun onBindViewHolder(holder: TablesVH?, position: Int) {
         val table = _tables[position]
         bindView(table, holder)
     }
 
-    private fun bindView(table: Table, holder: MyTablesVH?) {
+    private fun bindView(table: Table, holder: TablesVH?) {
         val sortScores = table.scores!!.sortedByDescending { it.timeStamp }
         val sortTags = if (table.tags != null) {
             table.tags!!.sortedByDescending { it.timeStamp }

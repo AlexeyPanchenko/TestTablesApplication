@@ -23,7 +23,7 @@ import android.support.v7.widget.DividerItemDecoration
 /**
  * Created by alexey on 02.09.17.
  */
-class MyTablesVH(view: View, private val context: Context) : RecyclerView.ViewHolder(view) {
+class TablesVH(view: View, private val context: Context) : RecyclerView.ViewHolder(view) {
 
     val scoreContainer = view.findViewById<LinearLayout>(R.id.scoreContainer)!!
     private val textId = view.findViewById<TextView>(R.id.tvTableId)

@@ -26,7 +26,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
 
     private val REQUEST_PHONE: Int = 1
     private var _presenter: MyTablesPresenter? = null
-    private var _adapter: MyTablesAdapter? = null
+    private var _adapter: TablesAdapter? = null
 
     companion object {
         fun newInstance() = MyTablesFragment()
@@ -41,7 +41,7 @@ class MyTablesFragment : Fragment(), MyTablesMVPView, OnItemClickListener {
         val view = inflater!!.inflate(R.layout.tables_fragment, container, false)
         val fab = activity.findViewById<FloatingActionButton>(R.id.fabAdd)
 
-        _adapter = MyTablesAdapter(activity, this)
+        _adapter = TablesAdapter(activity, this)
         _presenter = MyTablesPresenter(this)
 
         fab.setOnClickListener({ _presenter!!.onCreateTableClick() })

@@ -9,14 +9,13 @@ import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.SearchView
-import android.util.Log
 import android.view.*
 import kotlinx.android.synthetic.main.tables_fragment.*
 import org.jetbrains.anko.support.v4.toast
 import ru.aol_panchenko.tables.R
 import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.tables.edit_table.EditTableDialog
-import ru.aol_panchenko.tables.presentation.tables.my.MyTablesAdapter
+import ru.aol_panchenko.tables.presentation.tables.my.TablesAdapter
 import ru.aol_panchenko.tables.presentation.tables.my.OnItemClickListener
 
 /**
@@ -26,7 +25,7 @@ class DownloadTablesFragment : Fragment(), DownloadTablesMVPView, OnItemClickLis
 
     private val REQUEST_PHONE: Int = 1
     private var _presenter: DownloadTablesPresenter? = null
-    private var _adapter: MyTablesAdapter? = null
+    private var _adapter: TablesAdapter? = null
 
     companion object {
         fun newInstance() = DownloadTablesFragment()
@@ -40,7 +39,7 @@ class DownloadTablesFragment : Fragment(), DownloadTablesMVPView, OnItemClickLis
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.tables_fragment, container, false)
 
-        _adapter = MyTablesAdapter(activity, this)
+        _adapter = TablesAdapter(activity, this)
         _presenter = DownloadTablesPresenter(this)
 
         return view

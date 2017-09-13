@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.tables_fragment.*
 import org.jetbrains.anko.support.v4.toast
 import ru.aol_panchenko.tables.R
 import ru.aol_panchenko.tables.presentation.model.Table
-import ru.aol_panchenko.tables.presentation.tables.my.MyTablesAdapter
+import ru.aol_panchenko.tables.presentation.tables.my.TablesAdapter
 import ru.aol_panchenko.tables.presentation.tables.my.OnItemClickListener
 
 /**
@@ -25,7 +25,7 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
 
     private val REQUEST_PHONE: Int = 1
     private var _presenter: AllTablesPresenter? = null
-    private var _adapter: MyTablesAdapter? = null
+    private var _adapter: TablesAdapter? = null
     private lateinit var _errorContainer: FrameLayout
 
     companion object {
@@ -40,7 +40,7 @@ class AllTablesFragment : Fragment(), AllTablesMVPView, OnItemClickListener {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.tables_fragment, container, false)
         _errorContainer = view.findViewById(R.id.nothing_container)
-        _adapter = MyTablesAdapter(activity, this)
+        _adapter = TablesAdapter(activity, this)
         _presenter = AllTablesPresenter(this)
 
         return view
