@@ -1,4 +1,4 @@
-package ru.aol_panchenko.tables.presentation.tables.editTable
+package ru.aol_panchenko.tables.presentation.tables.edit_table
 
 import ru.aol_panchenko.tables.presentation.model.Tag
 

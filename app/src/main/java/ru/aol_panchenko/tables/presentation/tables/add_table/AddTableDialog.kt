@@ -15,13 +15,12 @@ import android.widget.EditText
 import kotlinx.android.synthetic.main.add_table_dialog.*
 import org.jetbrains.anko.onClick
 import ru.aol_panchenko.tables.R
-import ru.aol_panchenko.tables.presentation.model.Table
 import ru.aol_panchenko.tables.presentation.model.Tag
 
 /**
  * Created by alexey on 02.09.17.
  */
-class AddTableDialog : DialogFragment(), AddTableMVPView, OnTegDeleteListener {
+class AddTableDialog : DialogFragment(), AddTableMVPView, OnTegChangedListener {
 
     private var _presenter: AddTablePresenter? = null
     private var _adapter: AddTableTagsAdapter? = null
@@ -37,20 +36,23 @@ class AddTableDialog : DialogFragment(), AddTableMVPView, OnTegDeleteListener {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.add_table_dialog, container, false)
-        val fabAdd = view.findViewById<FloatingActionButton>(R.id.fabAddTag)
-        val btnCreate = view.findViewById<Button>(R.id.btnCreate)
-        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
-        _rvTags = view.findViewById(R.id.rv_tags)
-        _editScore = view.findViewById(R.id.etScore)
-
+        initViews(view)
         initRecyclerView()
         _presenter = AddTablePresenter(this, ViewModelProviders.of(this).get(AddTableViewModel::class.java))
 
+        return view
+    }
+
+    private fun initViews(view: View) {
+        val fabAdd = view.findViewById<FloatingActionButton>(R.id.fabAddTag)
+        val btnCreate = view.findViewById<Button>(R.id.btnCreate)
+        val btnCancel = view.findViewById<Button>(R.id.btnCancel)
         fabAdd.onClick { _presenter!!.onAddTagClick() }
         btnCreate.onClick { _presenter!!.onCreateClick() }
         btnCancel.onClick { _presenter!!.onCancelClick() }
 
-        return view
+        _rvTags = view.findViewById(R.id.rv_tags)
+        _editScore = view.findViewById(R.id.etScore)
     }
 
     private fun initRecyclerView() {
@@ -77,8 +79,12 @@ class AddTableDialog : DialogFragment(), AddTableMVPView, OnTegDeleteListener {
         dialog.dismiss()
     }
 
-    override fun onDelete(tag: Tag, position: Int) {
+    override fun onDelete() {
         dialog.currentFocus.clearFocus()
+    }
+
+    override fun onSync() {
+        _presenter!!.syncItems()
     }
 
     override fun showErrorValidate() {

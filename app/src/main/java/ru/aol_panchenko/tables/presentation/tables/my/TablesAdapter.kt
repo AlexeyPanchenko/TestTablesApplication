@@ -11,8 +11,8 @@ import ru.aol_panchenko.tables.presentation.model.Table
 /**
  * Created by alexey on 02.09.17.
  */
-class MyTablesAdapter(private val _context: Context, private val _clikListener: OnItemClickListener)
-    : RecyclerView.Adapter<MyTablesVH>() {
+class TablesAdapter(private val _context: Context, private val _clikListener: OnItemClickListener)
+    : RecyclerView.Adapter<TablesVH>() {
 
     private var _tables: List<Table> = ArrayList()
 
@@ -28,25 +28,40 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     fun removeItem(item: Table) {
-        val table = _tables.first { it.tableId == item.tableId }
+        val filterTables = _tables.filter { item.tableId == it.tableId }
+        if (filterTables.isEmpty()) {
+            notifyDataSetChanged()
+        } else {
+            val table = filterTables.first { item.tableId == it.tableId }
+            val position: Int = _tables.indexOf(table)
+            if (position != -1) {
+                (_tables as ArrayList).removeAt(position)
+                notifyItemRemoved(position)
+            }
+        }
+
+    }
+
+    fun changeItem(item: Table) {
+        val table = _tables.firstOrNull { it.tableId == item.tableId }
         val position: Int = _tables.indexOf(table)
         if (position != -1) {
-            (_tables as ArrayList).removeAt(position)
-            notifyItemRemoved(position)
+            (_tables as ArrayList)[position] = item
+            notifyItemChanged(position)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MyTablesVH {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): TablesVH {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.my_table_item, parent, false)
-        return MyTablesVH(view, _context)
+        return TablesVH(view, _context)
     }
 
-    override fun onBindViewHolder(holder: MyTablesVH?, position: Int) {
+    override fun onBindViewHolder(holder: TablesVH?, position: Int) {
         val table = _tables[position]
         bindView(table, holder)
     }
 
-    private fun bindView(table: Table, holder: MyTablesVH?) {
+    private fun bindView(table: Table, holder: TablesVH?) {
         val sortScores = table.scores!!.sortedByDescending { it.timeStamp }
         val sortTags = if (table.tags != null) {
             table.tags!!.sortedByDescending { it.timeStamp }
@@ -72,4 +87,13 @@ class MyTablesAdapter(private val _context: Context, private val _clikListener: 
     }
 
     override fun getItemCount() = _tables.size
+
+
+    fun notifyDataClear() {
+        (_tables as ArrayList).clear()
+        notifyDataSetChanged()
+    }
+
+    fun getItems() = _tables
+
 }

@@ -13,6 +13,7 @@
     <string name="enter_code_title">Введите код, полученный по смс</string>
     <string name="enter_code_confirm_text">Подтвердить</string>
     <string name="enter_code_resend_text">Отправить код заново</string>
+    <string name="code_description">(код придет в течение 30 секунд)</string>
 
     <string name="login_code_unknown">Неверный код</string>
     <string name="add_table_dialog_title">Создать таблицу</string>
@@ -29,5 +30,12 @@
 
     <string name="menu_edit_title">Редактировать</string>
     <string name="menu_delete_title">Удалить</string>
+    <string name="menu_download_title">Скачать</string>
+    <string name="no_internet_connection">Нет соединения с интернетом</string>
+    <string name="search_menu_action_titile">Поиск</string>
+    <string name="search_view_hint">Поиск по отзывам</string>
+    <string name="menu_sharing_title">Поделиться</string>
+    <string name="user_already_has_table_message">У данного пользователя уже есть эта таблица</string>
+    <string name="user_has_not_app_message">У этого друга нет приложения</string>
 
 </resources>

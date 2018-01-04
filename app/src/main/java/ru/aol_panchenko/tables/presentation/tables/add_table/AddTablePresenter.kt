@@ -11,52 +11,35 @@ import ru.aol_panchenko.tables.presentation.model.Tag
  */
 class AddTablePresenter(private val _mvpView: AddTableMVPView, private val _viewModel: AddTableViewModel) {
 
+    private val _database = FirebaseDatabase.getInstance().reference.child("tables")
+    private val _userId: String? = FirebaseAuth.getInstance().currentUser?.phoneNumber
+
     init {
         _mvpView.setTags(_viewModel.tags)
     }
 
-    fun onArgumentsAccept(table: Table?) {
-        val score = table!!.scores!!.first { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-        _mvpView.fillSCore(score.value.toString())
-        val tags = if (table.tags != null) {
-            table.tags!!.filter { FirebaseAuth.getInstance().currentUser!!.phoneNumber!! == it.uId }
-        } else {
-            ArrayList(0)
-        }
-        _viewModel.tags = tags as ArrayList<Tag>
-        _mvpView.setTags(_viewModel.tags)
-        _viewModel.isEdit = true
-    }
-
     fun onAddTagClick() {
-        val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
         val timeStamp = System.currentTimeMillis()
-        val tag = Tag(userId, "", timeStamp)
+        val tag = Tag(_userId!!, "", timeStamp)
         _mvpView.addTag(tag)
     }
 
     fun onCreateClick() {
         if (validateScore()) {
-            val database = FirebaseDatabase.getInstance().reference.child("tables")
-            if (_viewModel.isEdit) {
-                //database.child()
-            } else {
-                val key = database.push().key
-                val table = createTable(key)
-                database.child(key).setValue(table)
-                _mvpView.dismissDialog()
-            }
+            val key = _database.push().key
+            val table = createTable(key)
+            _database.child(key).setValue(table)
+            _mvpView.dismissDialog()
         } else {
             _mvpView.showErrorValidate()
         }
     }
 
     private fun createTable(key: String): Table {
-        val userId = FirebaseAuth.getInstance().currentUser!!.phoneNumber!!
         val timeStamp = System.currentTimeMillis()
         val scoreValue = if (_mvpView.getScoreValue().isNotEmpty()) _mvpView.getScoreValue().toInt() else 0
-        val score = Score(userId, scoreValue, timeStamp)
-        return Table(userId, key, arrayListOf(score), _mvpView.getTags()!!, ArrayList(0))
+        val score = Score(_userId!!, scoreValue, timeStamp)
+        return Table(_userId, key, arrayListOf(score), _mvpView.getTags()!!, ArrayList(0))
     }
 
     private fun validateScore(): Boolean {
@@ -66,16 +49,15 @@ class AddTablePresenter(private val _mvpView: AddTableMVPView, private val _view
     }
 
     fun onPause() {
-        val items = _mvpView.getTags()
-        if (items == null) {
-            _viewModel.tags.clear()
-        } else {
-            _viewModel.tags = items
-        }
+        syncItems()
     }
 
     fun onCancelClick() {
         _mvpView.dismissDialog()
+    }
+
+    fun syncItems() {
+        _viewModel.tags = _mvpView.getTags()!!
     }
 
 }

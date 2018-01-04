@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rvTables"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="4dp">
+    android:layout_height="match_parent">
 
-</android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvTables"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"/>
+
+    <FrameLayout
+        android:id="@+id/nothing_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+        <include layout="@layout/nothing_found_state"/>
+    </FrameLayout>
+</RelativeLayout>

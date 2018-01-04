@@ -15,7 +15,7 @@ import ru.aol_panchenko.tables.presentation.model.Tag
 /**
  * Created by alexey on 03.09.17.
  */
-class AddTableTagsAdapter(private val _listener: OnTegDeleteListener, private val _context: Context) : RecyclerView.Adapter<AddTableTagVH>() {
+class AddTableTagsAdapter(private val _listener: OnTegChangedListener, private val _context: Context) : RecyclerView.Adapter<AddTableTagVH>() {
 
     private var _tags = ArrayList<Tag>()
     private var _lastPos = -1
@@ -31,9 +31,10 @@ class AddTableTagsAdapter(private val _listener: OnTegDeleteListener, private va
     fun addItem(item: Tag?) {
         if (item != null) {
             val newPosition = itemCount
-            _tags.add(item)
-            notifyItemInserted(newPosition)
+            this._tags.add(newPosition, item)
+            super.notifyItemInserted(newPosition)
         }
+        _listener.onSync()
     }
 
     fun getItems() = _tags
@@ -42,11 +43,10 @@ class AddTableTagsAdapter(private val _listener: OnTegDeleteListener, private va
         val tag = _tags[position]
         holder!!.editTag.setText(tag.value)
         holder.ivDelete.setOnClickListener({
-            _listener.onDelete(tag, position)
+            _listener.onDelete()
             _tags.remove(tag)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(0, _tags.size)
-
+            super.notifyItemRemoved(position)
+            _listener.onSync()
         })
         holder.editTag.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
@@ -54,9 +54,11 @@ class AddTableTagsAdapter(private val _listener: OnTegDeleteListener, private va
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                tag.value = s.toString()
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                tag.value = s.toString()
 
             }
         })

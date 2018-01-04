@@ -9,16 +9,17 @@
     <TextView
         android:id="@+id/tvUserId"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:layout_gravity="center"
         style="@style/TextScore"
         tools:text="+79999999999" />
 
     <TextView
         android:id="@+id/tvTag"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
         style="@style/TextScore"

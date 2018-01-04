@@ -1,16 +1,20 @@
-package ru.aol_panchenko.tables.presentation.tables.my
+package ru.aol_panchenko.tables.presentation.tables.all
 
-import android.util.Log
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import ru.aol_panchenko.tables.presentation.model.Table
+import com.google.firebase.database.ValueEventListener
 import ru.aol_panchenko.tables.utils.formatContact
 
+
 /**
- * Created by alexey on 02.09.17.
+ * Created by alexey on 09.09.17.
  */
-class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
+class AllTablesPresenter(private val _mvpView: AllTablesMVPView) {
 
     private val _database = FirebaseDatabase.getInstance().reference.child("tables")
     private val _databaseUsers = FirebaseDatabase.getInstance().reference.child("users")
@@ -22,18 +26,30 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
         initFirebaseListener()
     }
 
-    fun onCreateTableClick() {
-        _mvpView.createTable()
-    }
+    private fun initFirebaseListener() {
 
-     private fun initFirebaseListener() {
-
-        _database.keepSynced(true)
+        _database.keepSynced(false)
 
         val childEventListener = getChildEventListener()
-        _database.addChildEventListener(childEventListener)
 
-         initValueEventListener()
+        val connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
+        connectedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java)!!
+                if (connected) {
+                    _database.addChildEventListener(childEventListener)
+                    _mvpView.showContentState()
+                } else {
+                    _database.removeEventListener(childEventListener)
+                    _mvpView.notifyListChangedNoConnection()
+                    _mvpView.showErrorNetworkState()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+        initValueEventListener()
     }
 
     private fun getChildEventListener(): ChildEventListener {
@@ -46,24 +62,17 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
 
             override fun onChildChanged(dataSnapshot: DataSnapshot?, p1: String?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                if (isMy(table)) {
-                    _mvpView.changeTable(table!!)
-                }
+                _mvpView.changeTable(table!!)
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot?, p1: String?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                if (isMy(table)) {
-                    _mvpView.addTable(table!!)
-                }
+                _mvpView.addTable(table!!)
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot?) {
                 val table = dataSnapshot!!.getValue(Table::class.java)
-                Log.d("TTT", "REMOVE ID = ${table!!.tableId}")
-                if (isMy(table)) {
-                    _mvpView.removeTable(table!!)
-                }
+                _mvpView.removeTable(table!!)
             }
         }
     }
@@ -83,18 +92,20 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
         })
     }
 
-    private fun isMy(table: Table?) = table!!.uId == _userId
-
     fun onItemClick(view: View, table: Table) {
         _mvpView.showItemMenu(view, table)
     }
 
-    fun onEditMenuClick(table: Table) {
-        _mvpView.showEditDialog(table)
-    }
-
-    fun onDeleteMenuClick(table: Table) {
-        _database.child(table.tableId).removeValue()
+    fun onDownloadMenuClick(table: Table) {
+        if (table.uId == _userId || (table.holders != null && table.holders!!.contains(_userId))) {
+            _mvpView.showErrorYourTable()
+        } else {
+            if (table.holders == null){
+                table.holders = ArrayList(1)
+            }
+            table.holders?.add(_userId!!)
+            _database.child(table.tableId).setValue(table)
+        }
     }
 
     fun onSearchQuerySubmit(query: String?) {
@@ -106,7 +117,6 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
                 val searchTables = ArrayList<Table>()
                 dataSnapshot!!.children
                         .map { it.getValue(Table::class.java) }
-                        .filter { it?.uId == _userId }
                         .forEach { table ->
                             table?.tags?.forEach met@ {
                                 if (it.value!!.contains(query!!) && !searchTables.contains(table)) {
@@ -136,7 +146,7 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
         }
         if (_users.contains(phone)) {
             if (!_table?.holders!!.contains(phone) && _table?.uId != phone) {
-                _table!!.holders!!.add(formatContact(number))
+                _table?.holders?.add(phone)
                 _database.child(_table!!.tableId).setValue(_table)
             } else {
                 _mvpView.showAlreadyExistMessage()
@@ -146,5 +156,4 @@ class MyTablesPresenter(private val _mvpView: MyTablesMVPView) {
         }
         _table = null
     }
-
 }

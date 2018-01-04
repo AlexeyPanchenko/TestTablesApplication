@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_menu_downloaded_edit"
+        android:title="@string/menu_edit_title"/>
+
+    <item
+        android:id="@+id/item_menu_delete"
+        android:title="@string/menu_delete_title"/>
+
+    <item
+        android:id="@+id/item_menu_sharing"
+        android:title="@string/menu_sharing_title"/>
+
+</menu>
